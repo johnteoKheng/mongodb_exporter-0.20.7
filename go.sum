@@ -307,6 +307,8 @@ github.com/pelletier/go-toml v1.7.0/go.mod h1:vwGMzjaWMwyfHwgIBhI2YUM4fB6nL6lVAv
 github.com/percona/exporter_shared v0.7.3 h1:TX4LisZ08jo8KIlekBTwPX13JlM6gOOKgmwg7QEf+r8=
 github.com/percona/exporter_shared v0.7.3/go.mod h1:AWk9lgTPzI7tC5PzpeBGvhhqjSJNxpPNFaF7qLIJqmo=
 github.com/percona/go-mysql v0.0.0-20190903141930-197f4ad8db8d/go.mod h1:/SGLf9OMxlnK6jq4mkFiImBcJXXk5jwD+lDrwDaGXcw=
+github.com/percona/mongodb_exporter v0.20.7 h1:lTHH1ZUfzyulZ2XeXu7RQbjazzGLnuisdb9Yt6qXt04=
+github.com/percona/mongodb_exporter v0.20.7/go.mod h1:qR5uC7ot5TvMagmHrxwe0Egf5BsSE3jVFfk8Vqw2zZs=
 github.com/percona/percona-toolkit v0.0.0-20210803120725-d14d18a1bfb6 h1:KIGUOrIs+71qjfm84FXVOiwSUGmGvNM0VBc3UJazhfk=
 github.com/percona/percona-toolkit v0.0.0-20210803120725-d14d18a1bfb6/go.mod h1:85kDBqA9/u6CyGveu1Ho5ZTZ0qlyfxNNpT/Nkr9K6po=
 github.com/performancecopilot/speed v3.0.0+incompatible/go.mod h1:/CLtqpZ5gBg1M9iaPbIdPPGyKcA8hKdoy6hAWba7Yac=

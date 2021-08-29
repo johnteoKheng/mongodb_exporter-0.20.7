@@ -3,7 +3,7 @@ package exporter
 import (
 	"strings"
 
-	"github.com/johnKheng/exporter_shared-0.7.3/helpers"
+	"github.com/percona/exporter_shared/helpers"
 )
 
 func filterMetrics(metrics []*helpers.Metric, filters []string) []*helpers.Metric {

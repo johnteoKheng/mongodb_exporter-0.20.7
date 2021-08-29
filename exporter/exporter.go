@@ -18,6 +18,12 @@
 package exporter
 
 import (
+	"crypto/subtle"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strings"
+	
 	"bytes"
 	"crypto/tls"
 	_ "expvar" // register /debug/vars on http.DefaultServeMux
@@ -26,15 +32,15 @@ import (
 	_ "net/http/pprof" // register /debug/pprof http.DefaultServeMux
 	"os"
 	"strings"
-
-	"github.com/prometheus/common/log"
-	"gopkg.in/alecthomas/kingpin.v2"
 	
 	"context"
 	"fmt"
 	"net/http"
 
-	"github.com/percona/exporter_shared"
+	"github.com/prometheus/common/log"
+	"gopkg.in/alecthomas/kingpin.v2"
+	"gopkg.in/yaml.v2"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -74,6 +80,9 @@ var (
 	errCannotHandleType   = fmt.Errorf("don't know how to handle data type")
 	errUnexpectedDataType = fmt.Errorf("unexpected data type")
 
+	authFileF = kingpin.Flag("web.auth-file", "Path to YAML file with server_user, server_password keys for HTTP Basic authentication "+
+		"(overrides HTTP_AUTH environment variable).").String()
+	
         sslCertFileF = kingpin.Flag("web.ssl-cert-file", "Path to SSL certificate file.").String()
 	sslKeyFileF  = kingpin.Flag("web.ssl-key-file", "Path to SSL key file.").String()
 
@@ -91,6 +100,11 @@ var (
 
 )
 
+type basicAuth struct {
+	Username string `yaml:"server_user,omitempty"`
+	Password string `yaml:"server_password,omitempty"`
+}
+
 func DefaultMetricsHandler() http.Handler {
 	h := promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{
 		ErrorLog:      log.NewErrorLogger(),
@@ -98,6 +112,67 @@ func DefaultMetricsHandler() http.Handler {
 	})
 	return promhttp.InstrumentMetricHandler(prometheus.DefaultRegisterer, h)
 }
+
+func readBasicAuth() *basicAuth {
+	var auth basicAuth
+	httpAuth := os.Getenv("HTTP_AUTH")
+	switch {
+	case *authFileF != "":
+		bytes, err := ioutil.ReadFile(*authFileF)
+		if err != nil {
+			log.Fatalf("cannot read auth file %q: %s", *authFileF, err)
+		}
+		if err = yaml.Unmarshal(bytes, &auth); err != nil {
+			log.Fatalf("cannot parse auth file %q: %s", *authFileF, err)
+		}
+	case httpAuth != "":
+		data := strings.SplitN(httpAuth, ":", 2)
+		if len(data) != 2 || data[0] == "" || data[1] == "" {
+			log.Fatalf("HTTP_AUTH should be formatted as user:password")
+		}
+		auth.Username = data[0]
+		auth.Password = data[1]
+	default:
+		// that's fine, return empty one below
+	}
+
+	return &auth
+}
+
+// basicAuthHandler checks username and password before invoking provided next handler.
+type basicAuthHandler struct {
+	basicAuth
+	nextHandler http.Handler
+}
+
+// ServeHTTP implements http.Handler.
+func (h *basicAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	username, password, _ := r.BasicAuth()
+	usernameOk := subtle.ConstantTimeCompare([]byte(h.Username), []byte(username)) == 1
+	passwordOk := subtle.ConstantTimeCompare([]byte(h.Password), []byte(password)) == 1
+	if !usernameOk || !passwordOk {
+		w.Header().Set("WWW-Authenticate", `Basic realm="metrics"`)
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+		return
+	}
+
+	h.nextHandler.ServeHTTP(w, r)
+}
+
+// authHandler wraps provided handler with basic authentication if it is configured.
+func authHandler(handler http.Handler) http.Handler {
+	auth := readBasicAuth()
+	if auth.Username != "" && auth.Password != "" {
+		log.Infoln("HTTP Basic authentication is enabled.")
+		return &basicAuthHandler{basicAuth: *auth, nextHandler: handler}
+	}
+
+	return handler
+}
+
+var (
+	_ http.Handler = (*basicAuthHandler)(nil)
+)
 
 // RunServer runs server for exporter with given name (it is used on landing page) on given address,
 // with HTTP basic authentication (if configured)

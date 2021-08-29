@@ -51,8 +51,8 @@ type GlobalFlags struct {
 	DiscoveringMode bool `name:"discovering-mode" help:"Enable autodiscover collections"`
 	CompatibleMode  bool `name:"compatible-mode" help:"Enable old mongodb-exporter compatible metrics"`
 	Version         bool `name:"version" help:"Show version and exit"`
-	WebSslCertFile  string `name:"web.ssl-cert-file" help: "Path to PEM file that conains the certificate"`
-	WebSslKeyFile   string `name:"web.ssl-key-file" help: "Path to PEM file that conains the key"`
+	WebSslCertFile  string `name:"web.ssl-cert-file" help:"Path to PEM file that conains the certificate"`
+	WebSslKeyFile   string `name:"web.ssl-key-file" help:"Path to PEM file that conains the key"`
 }
 
 func main() {

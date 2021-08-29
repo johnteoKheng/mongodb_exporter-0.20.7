@@ -8,7 +8,7 @@ go 1.15
 require (
 	github.com/AlekSi/pointer v1.1.0
 	github.com/alecthomas/kong v0.2.17
-	github.com/johnKheng/exporter_shared v0.7.3
+	github.com/johnKheng/exporter_shared-0.7.3 v0.7.3
 	github.com/percona/percona-toolkit v0.0.0-20210803120725-d14d18a1bfb6
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.11.0

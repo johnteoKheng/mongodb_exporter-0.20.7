@@ -20,9 +20,6 @@ package exporter
 import (
 	"crypto/subtle"
 	"io/ioutil"
-	"net/http"
-	"os"
-	"strings"
 	
 	"bytes"
 	"crypto/tls"

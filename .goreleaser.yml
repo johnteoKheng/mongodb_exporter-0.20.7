@@ -25,4 +25,3 @@ release:
     name: mongodb_exporter
   draft: true
   prerelease: auto
-  disable: true

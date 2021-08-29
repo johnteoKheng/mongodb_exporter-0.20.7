@@ -24,7 +24,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/sirupsen/logrus"
 
-	"github.com/percona/mongodb_exporter/exporter"
+	"github.com/johnteoKheng/mongodb_exporter-0.20.7/exporter"
 )
 
 //nolint:gochecknoglobals
@@ -51,6 +51,8 @@ type GlobalFlags struct {
 	DiscoveringMode bool `name:"discovering-mode" help:"Enable autodiscover collections"`
 	CompatibleMode  bool `name:"compatible-mode" help:"Enable old mongodb-exporter compatible metrics"`
 	Version         bool `name:"version" help:"Show version and exit"`
+	WebSslCertFile  string `name:"web.ssl-cert-file" help: "Path to PEM file that conains the certificate"`
+	WebSslKeyFile   string `name:"web.ssl-key-file" help: "Path to PEM file that conains the key"`
 }
 
 func main() {
@@ -117,6 +119,8 @@ func buildExporter(opts GlobalFlags) (*exporter.Exporter, error) {
 		DisableDiagnosticData:   opts.DisableDiagnosticData,
 		DisableReplicasetStatus: opts.DisableReplicasetStatus,
 		DirectConnect:           opts.DirectConnect,
+                WebSslCertFile:          opts.WebSslCertFile,
+ 		WebSslKeyFile:           opts.WebSslKeyFile,
 	}
 
 	e, err := exporter.New(exporterOpts)

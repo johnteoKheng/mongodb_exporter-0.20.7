@@ -1,4 +1,4 @@
-module github.com/johnteoKheng/mongodb_exporter-0.20.7/exporter
+module github.com/johnteoKheng/mongodb_exporter-0.20.7
 
 go 1.15
 

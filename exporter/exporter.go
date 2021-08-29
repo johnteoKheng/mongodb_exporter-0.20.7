@@ -54,8 +54,8 @@ type Opts struct {
 	Logger                  *logrus.Logger
 	DisableDiagnosticData   bool
 	DisableReplicasetStatus bool
-        WebSslCertFile:         string
-	WebSslKeyFile:          string
+        WebSslCertFile          string
+	WebSslKeyFile           string
 }
 
 var (

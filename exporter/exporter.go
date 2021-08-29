@@ -177,10 +177,16 @@ var (
 func RunServer(name, addr, path string, handler http.Handler) {
 	if (*sslCertFileF == "") != (*sslKeyFileF == "") {
 		log.Fatal("One of the flags --web.ssl-cert-file or --web.ssl-key-file is missing to enable HTTPS.")
+	}
+	
+	if *sslCertFileF != "" && *sslKeyFileF != "" {
 		*sslCertFileF="/mongodb/certs/cert.pem"
 		*sslKeyFileF="/mongodb/certs/key.pem"
 	}
 
+	log.Info("cert: ", *sslCertFileF)
+	log.Info("key: ", *sslKeyFileF)
+	
 	ssl := false
 	if *sslCertFileF != "" && *sslKeyFileF != "" {
 		if _, err := os.Stat(*sslCertFileF); os.IsNotExist(err) {
